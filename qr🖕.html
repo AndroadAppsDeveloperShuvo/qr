@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Code Generator</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      font-size: 16px;
+    }
+
+    button {
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      margin-top: 15px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+      display: none;
+    }
+
+    #qrcode img {
+      border-radius: 50%;
+    }
+
+    #try-again {
+      display: none;
+      background: #f44336;
+      margin-top: 15px;
+    }
+
+    #try-again:hover {
+      background: #d32f2f;
+    }
+
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      bottom: 40px;
+      transform: translateX(-50%);
+      font-size: 18px;
+    }
+
+    .toast.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @keyframes fadein {
+      from { bottom: 0; opacity: 0; }
+      to { bottom: 40px; opacity: 1; }
+    }
+
+    @keyframes fadeout {
+      from { bottom: 40px; opacity: 1; }
+      to { bottom: 0; opacity: 0; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>QR Code Generator</h1>
+    <input type="text" id="inputText" placeholder="Enter text or URL">
+    <input type="text" id="inputImage" placeholder="Optional image URL (logo)">
+    <button onclick="generateQRCode()">Generate QR Code</button>
+    <div id="qrcode"></div>
+    <button id="try-again" onclick="resetQRCode()">Try Again</button>
+  </div>
+
+  <div id="toast" class="toast">Developer Shuvo</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+  <script>
+    function generateQRCode() {
+      var text = document.getElementById('inputText').value.trim();
+      var imageUrl = document.getElementById('inputImage').value.trim();
+
+      if (!text) {
+        alert('Please enter text or URL.');
+        return;
+      }
+
+      var qrcodeDiv = document.getElementById('qrcode');
+      qrcodeDiv.innerHTML = '';
+      qrcodeDiv.style.display = 'block';
+
+      $(qrcodeDiv).qrcode({
+        text: text,
+        width: 200,
+        height: 200,
+        render: 'canvas'
+      });
+
+      if (imageUrl) {
+        var img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = 'Overlay Image';
+        img.onerror = function() {
+          alert('Invalid image URL.');
+        };
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.style.position = 'absolute';
+        img.style.transform = 'translate(-50%, -50%)';
+        qrcodeDiv.style.position = 'relative';
+        img.style.top = '50%';
+        img.style.left = '50%';
+        qrcodeDiv.appendChild(img);
+      }
+
+      showToast();
+
+      // Show "Try Again" button after 10 second delay
+      setTimeout(function() {
+        document.getElementById('try-again').style.display = 'inline-block';
+      }, 1000);
+    }
+
+    function resetQRCode() {
+      document.getElementById('inputText').value = '';
+      document.getElementById('inputImage').value = '';
+      var qrcodeDiv = document.getElementById('qrcode');
+      qrcodeDiv.innerHTML = '';
+      qrcodeDiv.style.display = 'none';
+      document.getElementById('try-again').style.display = 'none';
+    }
+
+    function showToast() {
+      var toast = document.getElementById('toast');
+      toast.className = 'toast show';
+      setTimeout(function() {
+        toast.className = toast.className.replace('show', '');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
